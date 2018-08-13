@@ -16,7 +16,7 @@ sea-level atmospheric pressures (Pa)}
 a single numeric value, two-dimensional array or matrix of atmospheric pressure (Pa)
 }
 \description{
-\code{pressure.height} applies asimple height adjustment to sea-level pressure data
+\code{pressure.height} applies a simple height adjustment to sea-level pressure data
 }
 \details{
 Height adjustments are performed using a simplification of the ideal gas law,
