@@ -16,7 +16,18 @@
 #' @format A raster object with 77 rows and 116 columns.
 #' @source \url{https://eip.ceh.ac.uk/rainfall/}
 "cornwallrain"
-
+#' Daily precipitation
+#'
+#' A dataset containing daily precipitation on the Lizard Peninsula for the period 1982-2015
+#'
+#' @format A data.frame with 12053 rows and two variables.
+#' \describe{
+#'   \item{obs_time}{Date of observation}
+#'   \item{precipitation}{Daily precipitation total (mm)}
+#' }
+#' @source \url{https://eip.ceh.ac.uk/rainfall/}
+#'
+"dailyrain"
 #' A 1 m resolution raster object of elevation for part of the Lizard Peninsula, Cornwall, UK.
 #'
 #' A raster object containing elevation in metres with sea coded as NA for the area bounded by

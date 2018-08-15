@@ -31,9 +31,6 @@ function fits a thin plate spline model fitted to coarse-resolution rainfall dat
 elevation as a predictor. The model is then applied to fine-resolution data and the results
 compared to those obtained using simple raster resampling using bilinear interpolation.
 The correction factor can then be applied to e.g. daily rainfall.
-
-#' @importFrom rgcvpack fitTps
-#' @importFrom rgcvpack predict.Tps
 }
 \examples{
 rainf <- resample(cornwallrain, dtm100m)

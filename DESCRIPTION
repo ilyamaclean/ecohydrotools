@@ -6,13 +6,14 @@ Authors@R: c(
     person("Ilya", "Maclean", email = "i.m.d.maclean@exeter.ac.uk", role = "cre"),
     person("Christopher", "French", email = "cf435@exeter.ac.uk", role = "aut"),
     person("Jonathan", "Mosedale", email = "j.mosedale@exeter.ac.uk", role = "aut"))
-Maintainer: The package maintainer <yourself@somewhere.net>
+Maintainer: The package maintainer <i.m.d.maclean@exeter.ac.uk>
 Description: The functions in the ecohydrotools package contain tools for 
     modelling hydrological processes for application in ecological research. 
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
 Depends:
+    HyetosMinute (>= 2.0),
     raster (>= 2.5.8),
     rgdal (>= 1.2),
     stringr (>= 1.2),
@@ -20,7 +21,9 @@ Depends:
     dplyr(>= 0.7)
 RoxygenNote: 6.0.1
 Roxygen: list(markdown = TRUE) 
-Suggests: knitr,
+Suggests: 
+    devtools,
+    knitr,
     rmarkdown,
     testthat
 VignetteBuilder: knitr

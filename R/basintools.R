@@ -9,7 +9,6 @@
 #'
 #' @return a raster object, two-dimensional array or matrix of sequentially numbered basins
 #' @importFrom dplyr left_join
-#' @export
 #'
 #' @examples
 #' basins <- matrix(c(1:4), nrow = 2, ncol = 2)
