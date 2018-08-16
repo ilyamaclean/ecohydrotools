@@ -20,8 +20,8 @@ basinsort <- function(dem, basins) {
     min(dem[sel], na.rm = TRUE)
   }
   r <- dem
-  dem <- is.raster(dem)
-  basins <- is.raster(basins)
+  dem <- is_raster(dem)
+  basins <- is_raster(basins)
   u <- unique(as.vector(basins))
   u <- u[is.na(u) == F]
   u2 <- c(1:length(u))
@@ -38,7 +38,7 @@ basinsort <- function(dem, basins) {
   df2 <- data.frame(old = c(NA, u), new = c(NA, u2))
   df3 <- left_join(df1, df2, by = "old")
   bm2 <- array(df3$new, dim = dim(basins))
-  if.raster(bm2, r)
+  if_raster(bm2, r)
 }
 #' Delineates hydrological basins
 #'
@@ -109,7 +109,7 @@ basindelin <- function(dem) {
     updownm
   }
   r <- dem
-  dem <- is.raster(dem)
+  dem <- is_raster(dem)
   ngbrow <- c(-1, -1, 0, 1, 1, 1, 0, -1)
   ngbcol <- c(0, 1, 1, 1, 0, -1, -1, -1)
   updownm <- updown(dem)
@@ -147,7 +147,7 @@ basindelin <- function(dem) {
     else basincell <- -999
     basin <- basin + 1
   }
-  basinsm <- if.raster(basinsm, r)
+  basinsm <- if_raster(basinsm, r)
   basinsort(r, basinsm)
   }
 #' Delineates hydrological basins for large datasets
@@ -432,8 +432,8 @@ basinmerge <- function(dem, basins, boundary) {
   if (all.equal(dim(basins)[1:2], dim(dem)[1:2]) == FALSE)
     stop ("basins and dem have different dimensions")
   r <- basins
-  dem <- is.raster(dem)
-  basins <- is.raster(basins)
+  dem <- is_raster(dem)
+  basins <- is_raster(basins)
   test <- F
   while (test == F) {
     mb2 <- basins
@@ -457,7 +457,7 @@ basinmerge <- function(dem, basins, boundary) {
     }
   }
   basins <- basinsort(dem, basins)
-  if.raster(basins, r)
+  if_raster(basins, r)
 }
 #' Calculates flow direction
 #'
@@ -478,7 +478,7 @@ basinmerge <- function(dem, basins, boundary) {
 #' plot(flowdir(dem), main = "Flow direction")
 #'
 flowdir <- function(dem) {
-  md <- is.raster(dem)
+  md <- is_raster(dem)
   fd <- md * 0
   md2 <- array(NA, dim = c(dim(md)[1] + 2, dim(md)[2] + 2))
   md2[2:(dim(md)[1] + 1), 2:(dim(md)[2] + 1)] <- md
@@ -490,7 +490,7 @@ flowdir <- function(dem) {
     md9 <- md2[x[i]:(x[i] + 2), y[i]:(y[i] + 2)]
     fd[x[i], y[i]] <- round(mean(which(md9 == min(md9, na.rm = T))), 0)
   }
-  if.raster(fd, dem)
+  if_raster(fd, dem)
 }
 #' Calculates accumulated flow
 #'
@@ -510,7 +510,7 @@ flowdir <- function(dem) {
 #' plot(flowacc(dem), main = "Accumulated flow")
 #'
 flowacc <- function(dem) {
-  dm <- is.raster(dem)
+  dm <- is_raster(dem)
   fd <- flowdir(dm)
   fa <- fd * 0 + 1
   o <- order(dm, decreasing = T, na.last = NA)
@@ -523,7 +523,7 @@ flowacc <- function(dem) {
     if (x2 > 0 & x2 < dim(dm)[1] & y2 > 0 & y2 < dim(dm)[2])
       fa[x2, y2] <- fa[x, y] + 1
   }
-  if.raster(fa, dem)
+  if_raster(fa, dem)
 }
 #' Calculates Bevan and Kirkby's topographic wetness index
 #'
@@ -552,12 +552,12 @@ flowacc <- function(dem) {
 #'
 topidx <- function(dem, minslope = atan(0.005 / mean(res(dem)))) {
   slope <- terrain(dem)
-  B <- is.raster(slope)
+  B <- is_raster(slope)
   B[B < minslope] <- minslope
-  a <- is.raster(flowacc(dem))
+  a <- is_raster(flowacc(dem))
   a <- a * res(dem)[1] * res(dem)[2]
   tpx <- log( a / tan(B))
-  if.raster(tpx, dem)
+  if_raster(tpx, dem)
 }
 #' Calculates slope perpendicular to direction of flow
 #'
@@ -576,7 +576,7 @@ topidx <- function(dem, minslope = atan(0.005 / mean(res(dem)))) {
 #' plot(perpslope(dem) * (180 / pi), main = "slope")
 #'
 perpslope <- function(dem) {
-  md <- is.raster(dem)
+  md <- is_raster(dem)
   md2 <- array(NA, dim = c(dim(md)[1] + 2, dim(md)[2] + 2))
   md2[2:(dim(md)[1] + 1), 2:(dim(md)[2] + 1)] <- md
   m <- array(c(1:9), dim = c(3,3))
@@ -601,7 +601,7 @@ perpslope <- function(dem) {
   hr <- apply(hr, c(1,2), sum)
   hd <- pmax(sqrt((hl-md)^2), sqrt((hr-md)^2))
   theta <- atan(hd / mean(res(dem)))
-  if.raster(theta, dem)
+  if_raster(theta, dem)
 }
 #' Finds coefficient for scaling topographic wetness to flow velocity
 #'
@@ -619,7 +619,7 @@ perpslope <- function(dem) {
 #' findm(topidx(dtm100m))
 #'
 findm <- function(tpx) {
-  tpx <- is.raster(tpx)
+  tpx <- is_raster(tpx)
   mn <- 0
   for (i in 0:100) {
     a <- i/5 - 10
@@ -666,13 +666,13 @@ findm <- function(tpx) {
 #'
 flowvelocity <- function(dem, nr = 0.025, wf = 0.0001, minslope = atan(0.005 / mean(res(dem)))) {
   res <- mean(res(dem))
-  nr <- is.raster(nr)
-  wf <- is.raster(wf)
-  pslope <- is.raster(perpslope(dem))
-  slope <- is.raster(terrain(dem))
+  nr <- is_raster(nr)
+  wf <- is_raster(wf)
+  pslope <- is_raster(perpslope(dem))
+  slope <- is_raster(terrain(dem))
   pslope[pslope < minslope] <- minslope
   slope[slope < minslope] <- minslope
-  tpx <- is.raster(topidx(dem))
+  tpx <- is_raster(topidx(dem))
   a <- log(wf / (1 - wf)) + findm(tpx)
   W <- 1 / (1 + exp(-log(tpx) - a))
   hd <- res * tan(pslope)
@@ -680,7 +680,7 @@ flowvelocity <- function(dem, nr = 0.025, wf = 0.0001, minslope = atan(0.005 / m
   P <- sqrt(hd ^ 2 + res^2)
   H <- (A / P) * W
   V <- (1 / nr) * H^(2/3) * sqrt(atan(slope))
-  if.raster(V, dem)
+  if_raster(V, dem)
 }
 #' Calculates flow time to basin bottom
 #'
@@ -719,15 +719,15 @@ flowvelocity <- function(dem, nr = 0.025, wf = 0.0001, minslope = atan(0.005 / m
 flowtimes <- function(dem, nr = 0.025, wf = 0.0005, maxiter = 100,
                       minslope = atan(0.005 / mean(res(dem)))) {
   res <- mean(res(dem))
-  fd <- is.raster(flowdir(dem))
-  fv <- is.raster(flowvelocity(dem, nr, wf, minslope))
+  fd <- is_raster(flowdir(dem))
+  fv <- is_raster(flowvelocity(dem, nr, wf, minslope))
   fd2 <- array(5, dim = dim(fd) + 2)
   fd2[2:(dim(fd)[1] + 1), 2:(dim(fd)[2] + 1)] <- fd
   fv2 <- array(100, dim = dim(fd) + 2)
   fv2[2:(dim(fv)[1] + 1), 2:(dim(fv)[2] + 1)] <- fv
   fv2[is.na(fv2)] <- 100
   fd2[is.na(fd2)] <- 5
-  md <- is.raster(mask(dem, if.raster(fv, dem)))
+  md <- is_raster(mask(dem, if_raster(fv, dem)))
   mdo <- order(md, decreasing = T, na.last = NA)
   # For each pixel in turn
   tms <- array(NA, dim = dim(fd))
@@ -748,7 +748,7 @@ flowtimes <- function(dem, nr = 0.025, wf = 0.0005, maxiter = 100,
     tms[mdo[cell]] <- tme
   }
   tms <- tms * res
-  tms <- if.raster(tms, dem)
+  tms <- if_raster(tms, dem)
   mask(tms, dem)
 }
 #' Calculates the contribution of each cell to peak flow
@@ -781,8 +781,8 @@ flowtimes <- function(dem, nr = 0.025, wf = 0.0005, maxiter = 100,
 #' plot(contributiontopeak(ft, basins, bysize = F))
 #'
 contributiontopeak <- function(ft, basins, bysize = TRUE) {
-  fm <- is.raster(ft)
-  bm <-  is.raster(basins)
+  fm <- is_raster(ft)
+  bm <-  is_raster(basins)
   zm <- fm * 0
   u <- unique(as.vector(bm))
   u <- u[is.na(u) == F]
@@ -801,7 +801,7 @@ contributiontopeak <- function(ft, basins, bysize = TRUE) {
     }
   }
 
-  if.raster(zm, ft)
+  if_raster(zm, ft)
 }
 
 

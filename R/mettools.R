@@ -18,12 +18,12 @@
 #' plot(pressure.height(dem = dtm100m))
 #'
 pressure.height <- function(psl = 101300, dem) {
-  psl <- is.raster(psl)
+  psl <- is_raster(psl)
   psl <- psl / 1000
-  z <- is.raster(dem)
+  z <- is_raster(dem)
   p <- psl * ((293 - 0.0065 * z) / 293)
   p <- p * 1000
-  if.raster(p, dem)
+  if_raster(p, dem)
 }
 #' Calculates crop reference evapotranspiration from hourly data
 #'
@@ -164,14 +164,14 @@ raincorrect <- function(demc, demf, rainc, rainf) {
   cf
 }
 #' Internal funcion used to calculate mean rainfall
-#'
-meanMBLRPM<-function(a,l,v,k,f,mx,h=1) {
+#' @export
+.meanMBLRPM<-function(a,l,v,k,f,mx,h=1) {
   x<-(h*l*mx*v*(1+k/f))/(a-1)
   return(x)
 }
 #' Internal funcion used to calculate variance of rainfall
-#'
-varMBLRPM<-function(a,l,v,k,f,mx,h=1) {
+#' @export
+.varMBLRPM<-function(a,l,v,k,f,mx,h=1) {
   A<-(2*l*(1+k/f)*(mx^2)*(v^a))/((f^2)*((f^2)-1)*(a-1)*(a-2)*(a-3))
   B<-(2*(f^2)-2+k*f)*(f^2)*((a-3)*h*(v^(2-a))-(v^(3-a))+((v+h)^(3-a)))
   C<-k*(f*(a-3)*h*(v^(2-a))-(v^(3-a))+((v+f*h)^(3-a)))
@@ -179,8 +179,8 @@ varMBLRPM<-function(a,l,v,k,f,mx,h=1) {
   return(D)
 }
 #' Internal funcion used to calculate covariance of rainfall
-#'
-covarMBLRPM<-function(a,l,v,k,f,mx,h=1,lag=1) {
+#' @export
+.co.varMBLRPM<-function(a,l,v,k,f,mx,h=1,lag=1) {
   A<-(l*(1+k/f)*(mx^2)*(v^a))/((f^2)*((f^2)-1)*(a-1)*(a-2)*(a-3))
   B<-(2*(f^2)-2+k*f)*(f^2)*(((v+(lag+1)*h)^(3-a))-2*((v+lag*h)^(3-a))+((v+(lag-1)*h)^(3-a)))
   C<-k*(((v+(lag+1)*h*f)^(3-a))-(2*((v+h*lag*f)^(3-a)))+((v+(lag-1)*h*f)^(3-a)))
@@ -188,8 +188,8 @@ covarMBLRPM<-function(a,l,v,k,f,mx,h=1,lag=1) {
   return(D)
 }
 #' Internal funcion used to calculate probability of being dry
-#'
-pdrMBLRPM<-function(a,l,v,k,f,h=1) {
+#' @export
+.pdrMBLRPM<-function(a,l,v,k,f,h=1) {
   mt<-((1+(f*(k+f))-(0.25*f*(k+f)*(k+4*f))+((f/72)*(k+f)*(4*(k^2)+27*k*f+72*(f^2))))*v)/(f*(a-1))
   G00<-((1-k-f+1.5*k*f+(f^2)+0.5*(k^2))*v)/(f*(a-1))
   A<-(f+(k*(v/(v+(k+f)*h))^(a-1)))/(f+k)
@@ -197,34 +197,34 @@ pdrMBLRPM<-function(a,l,v,k,f,h=1) {
   return(D)
 }
 #' Internal objective funcion used to derive Bartlett-Lewis model parameters
-#'
-objf1 <- function(x, means, vars, covs, pdrs, period = "daily") {
+#' @export
+.objf1 <- function(x, means, vars, covs, pdrs, period = "daily") {
   S1 <- 0
   S6 <- 0
   S12 <- 0
-  S48 <- ((meanMBLRPM(x[1], x[2], x[3], x[4], x[5], x[6], 48) / means[5]) - 1)^2 +
-    ((varMBLRPM(x[1], x[2], x[3], x[4], x[5], x[6], 48) / vars[5]) - 1)^2 +
-    ((covarMBLRPM(x[1], x[2], x[3], x[4], x[5], x[6], 48)/ covs[5]) - 1)^2 +
-    ((pdrMBLRPM(x[1], x[2], x[3], x[4], x[5], 48) / pdrs[5]) - 1)^2
-  S24 <- ((meanMBLRPM(x[1], x[2], x[3], x[4], x[5], x[6], 24) / means[4]) - 1)^2 +
-    ((varMBLRPM(x[1], x[2], x[3], x[4], x[5], x[6], 24) / vars[4]) - 1)^2 +
-    ((covarMBLRPM(x[1], x[2], x[3], x[4], x[5], x[6], 24)/ covs[4]) - 1)^2 +
-    ((pdrMBLRPM(x[1], x[2], x[3], x[4], x[5], 24) / pdrs[4]) - 1)^2
+  S48 <- ((.meanMBLRPM(x[1], x[2], x[3], x[4], x[5], x[6], 48) / means[5]) - 1)^2 +
+    ((.varMBLRPM(x[1], x[2], x[3], x[4], x[5], x[6], 48) / vars[5]) - 1)^2 +
+    ((.co.varMBLRPM(x[1], x[2], x[3], x[4], x[5], x[6], 48)/ covs[5]) - 1)^2 +
+    ((.pdrMBLRPM(x[1], x[2], x[3], x[4], x[5], 48) / pdrs[5]) - 1)^2
+  S24 <- ((.meanMBLRPM(x[1], x[2], x[3], x[4], x[5], x[6], 24) / means[4]) - 1)^2 +
+    ((.varMBLRPM(x[1], x[2], x[3], x[4], x[5], x[6], 24) / vars[4]) - 1)^2 +
+    ((.co.varMBLRPM(x[1], x[2], x[3], x[4], x[5], x[6], 24)/ covs[4]) - 1)^2 +
+    ((.pdrMBLRPM(x[1], x[2], x[3], x[4], x[5], 24) / pdrs[4]) - 1)^2
   if (period == "sixhourly" | period == "hourly") {
-    S12 <- ((meanMBLRPM(x[1], x[2], x[3], x[4], x[5], x[6], 12) / means[3]) - 1)^2 +
-      ((varMBLRPM(x[1], x[2], x[3], x[4], x[5], x[6], 12) / vars[3]) - 1)^2 +
-      ((covarMBLRPM(x[1], x[2], x[3], x[4], x[5], x[6], 12)/ covs[3]) - 1)^2 +
-      ((pdrMBLRPM(x[1], x[2], x[3], x[4], x[5], 12) / pdrs[3]) - 1)^2
-    S6 <- ((meanMBLRPM(x[1], x[2], x[3], x[4], x[5], x[6], 6) / means[2]) - 1)^2 +
-      ((varMBLRPM(x[1], x[2], x[3], x[4], x[5], x[6], 6) / vars[2]) - 1)^2 +
-      ((covarMBLRPM(x[1], x[2], x[3], x[4], x[5], x[6], 6)/ covs[2]) - 1)^2 +
-      ((pdrMBLRPM(x[1], x[2], x[3], x[4], x[5], 6) / pdrs[2]) - 1)^2
+    S12 <- ((.meanMBLRPM(x[1], x[2], x[3], x[4], x[5], x[6], 12) / means[3]) - 1)^2 +
+      ((.varMBLRPM(x[1], x[2], x[3], x[4], x[5], x[6], 12) / vars[3]) - 1)^2 +
+      ((.co.varMBLRPM(x[1], x[2], x[3], x[4], x[5], x[6], 12)/ covs[3]) - 1)^2 +
+      ((.pdrMBLRPM(x[1], x[2], x[3], x[4], x[5], 12) / pdrs[3]) - 1)^2
+    S6 <- ((.meanMBLRPM(x[1], x[2], x[3], x[4], x[5], x[6], 6) / means[2]) - 1)^2 +
+      ((.varMBLRPM(x[1], x[2], x[3], x[4], x[5], x[6], 6) / vars[2]) - 1)^2 +
+      ((.co.varMBLRPM(x[1], x[2], x[3], x[4], x[5], x[6], 6)/ covs[2]) - 1)^2 +
+      ((.pdrMBLRPM(x[1], x[2], x[3], x[4], x[5], 6) / pdrs[2]) - 1)^2
   }
   if (period == "hourly") {
-    S1 <- ((meanMBLRPM(x[1], x[2], x[3], x[4], x[5], x[6], 1) / means[1]) - 1)^2 +
-      ((varMBLRPM(x[1], x[2], x[3], x[4], x[5], x[6], 1) / vars[1]) - 1)^2 +
-      ((covarMBLRPM(x[1], x[2], x[3], x[4], x[5], x[6], 1)/ covs[1]) - 1)^2 +
-      ((pdrMBLRPM(x[1], x[2], x[3], x[4], x[5], 1) / pdrs[1]) - 1)^2
+    S1 <- ((.meanMBLRPM(x[1], x[2], x[3], x[4], x[5], x[6], 1) / means[1]) - 1)^2 +
+      ((.varMBLRPM(x[1], x[2], x[3], x[4], x[5], x[6], 1) / vars[1]) - 1)^2 +
+      ((.co.varMBLRPM(x[1], x[2], x[3], x[4], x[5], x[6], 1)/ covs[1]) - 1)^2 +
+      ((.pdrMBLRPM(x[1], x[2], x[3], x[4], x[5], 1) / pdrs[1]) - 1)^2
   }
   S <- S1 + S6 + S12 + S24 + S48
   if(is.infinite(S)) {S<-10^40}
@@ -374,7 +374,7 @@ findBLpar <- function(rainseq, period = "daily") {
     pop <- mat.or.vec(nr = 1000, nc = 6)
     for (i in 1:6)
       pop[, i] <- runif(n = 1000, min = xmin[i], max = xmax[i])
-    fpop <- apply(pop, 1, objf1, means, vars, covs, pdrs, period)
+    fpop <- apply(pop, 1, .objf1, means, vars, covs, pdrs, period)
     o<-order(fpop)
     pop<-pop[o[1:200],]
     xmin <- apply(pop,2,min)
@@ -386,17 +386,18 @@ findBLpar <- function(rainseq, period = "daily") {
   x <- (xmin + xmax) / 2
   x <- data.frame(matrix(x, nr = 1, nc = 6))
   names(x) <- c("a", "l", "v", "k", "f", "mx")
-  x$mean.rain <- as.numeric(meanMBLRPM(x[1], x[2], x[3], x[4], x[5], x[6], h = 24))
-  x$var.rain <- as.numeric(varMBLRPM(x[1], x[2], x[3], x[4], x[5], x[6], 24))
-  x$cvar.rain <- as.numeric(covarMBLRPM(x[1], x[2], x[3], x[4], x[5], x[6], 24))
-  x$prop.dry <- as.numeric(pdrMBLRPM(x[1], x[2], x[3], x[4], x[5], 24))
+  x$mean.rain <- as.numeric(.meanMBLRPM(x[1], x[2], x[3], x[4], x[5], x[6], h = 24))
+  x$var.rain <- as.numeric(.varMBLRPM(x[1], x[2], x[3], x[4], x[5], x[6], 24))
+  x$cvar.rain <- as.numeric(.co.varMBLRPM(x[1], x[2], x[3], x[4], x[5], x[6], 24))
+  x$prop.dry <- as.numeric(.pdrMBLRPM(x[1], x[2], x[3], x[4], x[5], 24))
   x$l <- x$l * 24
   x$mx <- x$mx * 24
   x$v <- x$v / 24
   return(x)
 }
 #' Internal funcion used by [subdailyrain()]
-#'
+#' @export
+#' @keywords internal
 IMlevel2 <- function (L, l, f, k, a, v, mx, Zhist, subtimescale) {
   sx <- mx
   TotalNumRep <- 1000
@@ -504,7 +505,8 @@ IMlevel2 <- function (L, l, f, k, a, v, mx, Zhist, subtimescale) {
   }
 }
 #' Internal funcion used by [subdailyrain()]
-#'
+#' @export
+#' @keywords internal
 #'
 IMHyetosRepScheme <- function (L, l, f, k, a, v, mx, Zhist, subtimescale) {
   i <- IMlevel2(L = L, l = l, f = f, k = k, a = a, v = v, Zhist = Zhist, mx = mx,

@@ -9,3 +9,4 @@ IMHyetosRepScheme(L, l, f, k, a, v, mx, Zhist, subtimescale)
 \description{
 Internal funcion used by \code{\link[=subdailyrain]{subdailyrain()}}
 }
+\keyword{internal}
