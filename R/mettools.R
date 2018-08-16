@@ -336,7 +336,6 @@ findBLpar <- function(rainseq, period = "daily") {
   }
   if (period == "sixhourly") {
     if (length(rainseq)%%8 != 0) {
-      warning("Incomplete two-days. Truncating data")
       rainseq <- rainseq[1:(floor(length(rainseq) / 8) * 8)]
     }
     rain[[2]] <- rainseq
@@ -356,7 +355,6 @@ findBLpar <- function(rainseq, period = "daily") {
   }
   if (period == "daily") {
     if (length(rainseq)%%2 != 0) {
-      warning("Incomplete two-days. Truncating data")
       rainseq <- rainseq[1:(floor(length(rainseq) / 2) * 2)]
     }
     rain[[4]] <- rainseq
