@@ -399,8 +399,6 @@ findBLpar <- function(rainseq, period = "daily") {
 }
 #' Internal funcion used by [subdailyrain()]
 #'
-#' @import HyetosMinute
-#'
 IMlevel2 <- function (L, l, f, k, a, v, mx, Zhist, subtimescale) {
   sx <- mx
   TotalNumRep <- 1000
@@ -509,7 +507,6 @@ IMlevel2 <- function (L, l, f, k, a, v, mx, Zhist, subtimescale) {
 }
 #' Internal funcion used by [subdailyrain()]
 #'
-#' @import HyetosMinute
 #'
 IMHyetosRepScheme <- function (L, l, f, k, a, v, mx, Zhist, subtimescale) {
   i <- IMlevel2(L = L, l = l, f = f, k = k, a = a, v = v, Zhist = Zhist, mx = mx,
@@ -546,7 +543,6 @@ IMHyetosRepScheme <- function (L, l, f, k, a, v, mx, Zhist, subtimescale) {
 #' @return A matrix with `length(rain)` rows and `dailyvals` columns of sub-daily rainfall.
 #'
 #' @export
-#' @import HyetosMinute
 #'
 #' @details The function is based on the Bartlett-Lewis Rectangular Pulse model described by
 #' Rodriguez-Iturbe (1987 & 1988). The model has six parameters (see [findBLpar()]) and is
