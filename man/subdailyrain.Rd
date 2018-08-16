@@ -9,7 +9,7 @@ subdailyrain(rain, BLpar, dailyvals = 24)
 \arguments{
 \item{rain}{a vector time-series of rainfall}
 
-\item{BLpar}{a data.frame of Bartlett-Lewis as returned by \code{\link[=findBLpar]{findBLpar()}}.}
+\item{BLpar}{a data.frame of Bartlett-Lewis parameters as returned by \code{\link[=findBLpar]{findBLpar()}}.}
 
 \item{dailyvals}{the number of rainfall values required for each day (i.e. 24 for hourly).}
 }

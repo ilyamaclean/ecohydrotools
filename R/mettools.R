@@ -540,7 +540,7 @@ IMHyetosRepScheme <- function (L, l, f, k, a, v, mx, Zhist, subtimescale) {
 #' `subdailyrain` estimate sub-daily rainfall using Bartlett-Lewis rectangular pulse rainfall model.
 #'
 #' @param rain a vector time-series of rainfall
-#' @param BLpar a data.frame of Bartlett-Lewis as returned by [findBLpar()].
+#' @param BLpar a data.frame of Bartlett-Lewis parameters as returned by [findBLpar()].
 #' @param dailyvals the number of rainfall values required for each day (i.e. 24 for hourly).
 #'
 #' @return A matrix with `length(rain)` rows and `dailyvals` columns of sub-daily rainfall.
