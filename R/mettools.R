@@ -545,9 +545,8 @@ IMHyetosRepScheme <- function (L, l, f, k, a, v, mx, Zhist, subtimescale) {
 #'
 #' @return A matrix with `length(rain)` rows and `dailyvals` columns of sub-daily rainfall.
 #'
-#' @import HyetosMinute
 #' @export
-#'
+#' @import HyetosMinute
 #'
 #' @details The function is based on the Bartlett-Lewis Rectangular Pulse model described by
 #' Rodriguez-Iturbe (1987 & 1988). The model has six parameters (see [findBLpar()]) and is
