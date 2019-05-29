@@ -117,6 +117,7 @@ sp <- getsoilparams("Clay loam")
 # ================================================================== #
 # Run model for Lizard Peninsula over 365 days assuming clay-loam soils
 # and with default settings. Trace is `TRUE` so progress is tracked
+# MOdel takes ~ 5 mins to run
 # ================================================================== #
 hm <- hydromodel_spatial(dtm100m, rain, cre, sp)
 # ============== Calculate and plot means  ==================== #
@@ -125,7 +126,7 @@ soil2 <- apply(hm$sm2, c(1, 2), mean) # soil moisture in layer 2
 sfcew <- apply(hm$surface, c(1, 2), mean) # standing water (mm)
 plot(if_raster(soil1, dtm100m), main = "Layer 1")
 plot(if_raster(soil2, dtm100m), main = "Layer 2")
-plot(if_raster(sfcew, dtm100m), main = "Surface water")
+
 }
 \seealso{
 \code{\link[=getsoilparams]{getsoilparams()}} \code{\link[=Dtheta]{Dtheta()}} \code{\link[=Ktheta]{Ktheta()}} \code{\link[=runoff]{runoff()}} \code{\link[=soilevap]{soilevap()}} \code{\link[=topdist]{topdist()}} \code{\link[=topdistw]{topdistw()}} \code{\link[=hydromodel_time]{hydromodel_time()}}

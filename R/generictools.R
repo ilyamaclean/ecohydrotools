@@ -7,7 +7,7 @@
 #' @param r an R object
 #'
 #' @return if `r` is a raster, `x` is converted to a raster with the same attributes as `r`, otherwise returns `x`
-#' @import raster, elevatr
+#' @import raster elevatr
 #' @export
 #'
 #' @examples
