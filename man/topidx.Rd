@@ -27,7 +27,7 @@ equal area projection.
 }
 \examples{
 dem <- aggregate(dtm1m, 20)
-plot(topidx(dem), main = "Topographic wetness")
+plot(log(topidx(dem)), main = "Topographic wetness")
 
 }
 \references{

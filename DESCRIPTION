@@ -4,7 +4,6 @@ Title: hydrogical  modelling for ecological applications with R
 Version: 0.1.0
 Authors@R: c(
     person("Ilya", "Maclean", email = "i.m.d.maclean@exeter.ac.uk", role = "cre"),
-    person("Christopher", "French", email = "cf435@exeter.ac.uk", role = "aut"),
     person("Jonathan", "Mosedale", email = "j.mosedale@exeter.ac.uk", role = "aut"))
 Maintainer: The package maintainer <i.m.d.maclean@exeter.ac.uk>
 Description: The functions in the ecohydrotools package contain tools for 
@@ -12,15 +11,15 @@ Description: The functions in the ecohydrotools package contain tools for
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
-Depends:
-    raster (>= 2.5.8),
-    rgdal (>= 1.2),
+Imports:
+    raster,
     stringr (>= 1.2),
     sp (>= 1.2),
-    dplyr(>= 0.7)
-RoxygenNote: 6.0.1
+    dplyr(>= 0.7),
+    elevatr
+RoxygenNote: 6.1.0
 Roxygen: list(markdown = TRUE) 
-Suggests: 
+Suggests:
     devtools,
     knitr,
     rmarkdown,
@@ -28,4 +27,3 @@ Suggests:
 VignetteBuilder: knitr
 URL: https://github.com/ilyamaclean/ecohydrotools
 BugReports: http://github.com/ecohydrotools/issues
-

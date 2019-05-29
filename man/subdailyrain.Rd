@@ -4,14 +4,15 @@
 \alias{subdailyrain}
 \title{Estimate sub-daily rainfall from daily rainfall}
 \usage{
-subdailyrain(rain, BLpar, dailyvals = 24)
+subdailyrain(rain, BLest, dailyvals = 24, dlim = 0.2, maxiter = 1000,
+  splitthreshold = 0.2, trace = TRUE)
 }
 \arguments{
 \item{rain}{a vector time-series of rainfall}
 
-\item{BLpar}{a data.frame of Bartlett-Lewis parameters as returned by \code{\link[=findBLpar]{findBLpar()}}.}
-
 \item{dailyvals}{the number of rainfall values required for each day (i.e. 24 for hourly).}
+
+\item{BLpar}{a data.frame of Bartlett-Lewis parameters as returned by \code{\link[=findBLpar]{findBLpar()}}.}
 }
 \value{
 A matrix with \code{length(rain)} rows and \code{dailyvals} columns of sub-daily rainfall.

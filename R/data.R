@@ -28,6 +28,7 @@
 #' @source \url{https://eip.ceh.ac.uk/rainfall/}
 #'
 "dailyrain"
+
 #' A 1 m resolution raster object of elevation for part of the Lizard Peninsula, Cornwall, UK.
 #'
 #' A raster object containing elevation in metres with sea coded as NA for the area bounded by
@@ -61,3 +62,34 @@
 #' @source \url{http://www.tellusgb.ac.uk/}
 "dtm1km"
 
+#' Demo time-series of rainfall and evapotranspiration
+#'
+#' A dataset of daily rainfall and evapotranspiration in mm for the Lizard Peninsula in
+#' Cornwall in 2017.
+#'
+#'  @format A data frame with 365 rows and 2 variables
+#'  \describe{
+#'   \item {rain} {daily rainfall (mm)}
+#'   \item {evap} {daily crop reference evapotranspiration (mm)}
+#'  }
+#' "rainevap"
+
+#' Van Genuchten model parameters
+#'
+#' A dataset containing Van Genuchten model parameters and Hydrologic Soil Groupings for
+#' major soil types derived by combining data from Carsel and Parrish (1988) Water Resources
+#' Research 24:755–769 and Schaap et al. (1998) Soil Science Society of America Journal
+#' 62:847–855.
+#'
+#' @format A data frame with 12 rows and 7 variables:
+#' \describe{
+#'  \item {soil.type} {description of soil type}
+#'  \item {Smax} {Volumetric water content at saturation (cm^3 / cm^3)}
+#'  \item {Smin} {Residual water content (cm^3 / cm^3)}
+#'  \item {alpha} {Shape parameter of the van Genuchten mode (cm^-1)}
+#'  \item {n} {Pore size distribution parameter (dimensionless, > 1)}
+#'  \item {Ksat} {Saturated hydraulic conductivity (cm / day)}
+#'  \item {HSG} {USDA Hydrological soil group}
+#' }
+#' @source: \url{https://onlinelibrary.wiley.com/doi/full/10.1002/ird.1751}
+#' "soilparams"

@@ -7,7 +7,7 @@
 #' @param r an R object
 #'
 #' @return if `r` is a raster, `x` is converted to a raster with the same attributes as `r`, otherwise returns `x`
-#' @import raster
+#' @import raster, elevatr
 #' @export
 #'
 #' @examples
@@ -42,4 +42,11 @@ is_raster <- function(r) {
   if (class(r) == "RasterLayer")
     r <- getValues(r, format = "matrix")
   r
+}
+#' internal function used for loading spatial arrays
+#' @export
+.loada <- function(fn) {
+  aa <- load(fn)
+  aa <- get(aa)
+  return(aa$arraydata)
 }

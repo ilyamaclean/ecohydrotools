@@ -351,6 +351,51 @@ basindelin_big <- function(dem, dirout = NA, trace = TRUE) {
   basins <- basinsort(dem, basins)
   basins
 }
+#' Internal function for calculating basin characteristics
+#' @export
+.basinchars <- function(md, mb, sea = F) {
+  mb2 <- array(NA, dim = c(dim(mb)[1] + 2, dim(mb)[2] + 2))
+  mb2[2:(dim(mb)[1] + 1), 2:(dim(mb)[2] + 1)] <- mb
+  sel <- which(is.na(mb2) == T)
+  mb2[sel] <- (-999)
+  md2 <- array(NA, dim = c(dim(md)[1] + 2, dim(md)[2] + 2))
+  md2[2:(dim(md)[1] + 1), 2:(dim(md)[2] + 1)] <- md
+  if (sea) {
+    md2[sel] <- -9999
+  } else md2[sel] <- 9999
+  dfm <- data.frame(basin = NA, basinmindepth = NA,
+                    pourpointbasin = NA, pourpointhgt = NA)
+  for (b in 1:max(mb, na.rm = T)) {
+    sel <- which(mb == b)
+    x <- arrayInd(sel, dim(md))[, 1]
+    y <- arrayInd(sel, dim(md))[, 2]
+    df1 <- data.frame(basin = b,
+                      basinmindepth = min(md[sel], na.rm = T),
+                      pourpointbasin = NA, pourpointhgt = 0)
+    b2 <- 0
+    pph <- 0
+    for (i in 1:length(x)) {
+      mb9 <- mb2[x[i]:(x[i] + 2), y[i]:(y[i] + 2)]
+      md9 <- md2[x[i]:(x[i] + 2), y[i]:(y[i] + 2)]
+      sel <- which(as.vector(mb9) != b)
+      b2[i] <- NA
+      pph[i] <- NA
+      if (length(sel) > 0) {
+        mb9 <- mb9[sel]
+        md9 <- md9[sel]
+        sel2 <- which(as.vector(md9) == min(as.vector(md9)))
+        b2[i] <- mb9[sel2][1]
+        pph[i] <- md9[sel2][1]
+      }
+    }
+    sel <- which(pph == min(pph, na.rm = T))
+    df1$pourpointbasin <- b2[sel[1]]
+    df1$pourpointhgt <- min(pph, na.rm = T)
+    dfm <- rbind(dfm, df1)
+  }
+  dfm <- dfm[which(is.na(dfm$basin) == F), ]
+  dfm
+}
 #' Merges adjoining basins
 #'
 #' @description
@@ -378,47 +423,6 @@ basindelin_big <- function(dem, dirout = NA, trace = TRUE) {
 #' plot(basins100m, main = "Basins")
 #' plot(basins2, main = "Merged basins")
 basinmerge <- function(dem, basins, boundary) {
-  basinchars <- function(md, mb) {
-    mb2 <- array(NA, dim = c(dim(mb)[1] + 2, dim(mb)[2] + 2))
-    mb2[2:(dim(mb)[1] + 1), 2:(dim(mb)[2] + 1)] <- mb
-    sel <- which(is.na(mb2) == T)
-    mb2[sel] <- (-999)
-    md2 <- array(NA, dim = c(dim(md)[1] + 2, dim(md)[2] + 2))
-    md2[2:(dim(md)[1] + 1), 2:(dim(md)[2] + 1)] <- md
-    md2[sel] <- 9999
-    dfm <- data.frame(basin = NA, basinmindepth = NA,
-                      pourpointbasin = NA, pourpointhgt = NA)
-    for (b in 1:max(mb, na.rm = T)) {
-      sel <- which(mb == b)
-      x <- arrayInd(sel, dim(md))[, 1]
-      y <- arrayInd(sel, dim(md))[, 2]
-      df1 <- data.frame(basin = b,
-                        basinmindepth = min(md[sel], na.rm = T),
-                        pourpointbasin = NA, pourpointhgt = 0)
-      b2 <- 0
-      pph <- 0
-      for (i in 1:length(x)) {
-        mb9 <- mb2[x[i]:(x[i] + 2), y[i]:(y[i] + 2)]
-        md9 <- md2[x[i]:(x[i] + 2), y[i]:(y[i] + 2)]
-        sel <- which(as.vector(mb9) != b)
-        b2[i] <- NA
-        pph[i] <- NA
-        if (length(sel) > 0) {
-          mb9 <- mb9[sel]
-          md9 <- md9[sel]
-          sel2 <- which(as.vector(md9) == min(as.vector(md9)))
-          b2[i] <- mb9[sel2][1]
-          pph[i] <- md9[sel2][1]
-        }
-      }
-      sel <- which(pph == min(pph, na.rm = T))
-      df1$pourpointbasin <- b2[sel[1]]
-      df1$pourpointhgt <- min(pph, na.rm = T)
-      dfm <- rbind(dfm, df1)
-    }
-    dfm <- dfm[which(is.na(dfm$basin) == F), ]
-    dfm
-  }
   bvarsrem <- function(bvars, boundary) {
     sel <- which(bvars$pourpointbasin != -999)
     if (length(sel) == 0) warning("all basins flow into sea")
@@ -437,7 +441,7 @@ basinmerge <- function(dem, basins, boundary) {
   test <- F
   while (test == F) {
     mb2 <- basins
-    bvars <- basinchars(dem, basins)
+    bvars <- .basinchars(dem, basins)
     bkeep <- bvarsrem(bvars, boundary)
     if (dim(bkeep)[1] == 0) test <- T
     for (b in 1:(dim(bkeep)[1])) {
@@ -548,7 +552,7 @@ flowacc <- function(dem) {
 #'
 #' @examples
 #' dem <- aggregate(dtm1m, 20)
-#' plot(topidx(dem), main = "Topographic wetness")
+#' plot(log(topidx(dem)), main = "Topographic wetness")
 #'
 topidx <- function(dem, minslope = atan(0.005 / mean(res(dem)))) {
   slope <- terrain(dem)
@@ -556,7 +560,7 @@ topidx <- function(dem, minslope = atan(0.005 / mean(res(dem)))) {
   B[B < minslope] <- minslope
   a <- is_raster(flowacc(dem))
   a <- a * res(dem)[1] * res(dem)[2]
-  tpx <- log( a / tan(B))
+  tpx <-  a / tan(B)
   if_raster(tpx, dem)
 }
 #' Calculates slope perpendicular to direction of flow
@@ -579,12 +583,12 @@ perpslope <- function(dem) {
   md <- is_raster(dem)
   md2 <- array(NA, dim = c(dim(md)[1] + 2, dim(md)[2] + 2))
   md2[2:(dim(md)[1] + 1), 2:(dim(md)[2] + 1)] <- md
-  m <- array(c(1:9), dim = c(3,3))
+  m <- array(c(1:9), dim = c(3, 3))
   df1 <- data.frame(old = as.vector(flowdir(md)))
-  df2 <- data.frame(old = as.vector(m), new = as.vector(t(m[3:1,])))
+  df2 <- data.frame(old = as.vector(m), new = as.vector(t(m[3:1, ])))
   df3 <- left_join(df1, df2, by = "old")
   fdl <- array(df3$new, dim = dim(md))
-  df2 <- data.frame(old = as.vector(m), new = as.vector(t(m[,3:1])))
+  df2 <- data.frame(old = as.vector(m), new = as.vector(t(m[, 3:1])))
   df3 <- left_join(df1, df2, by = "old")
   fdr <- array(df3$new, dim = dim(md))
   ad <- array(NA, dim = c(dim(md), 9))
@@ -599,7 +603,7 @@ perpslope <- function(dem) {
   for (i in 1:9) hr[,,i] <- ifelse(fdr == i, ad[,,i], 0)
   hl <- apply(hl, c(1,2), sum)
   hr <- apply(hr, c(1,2), sum)
-  hd <- pmax(sqrt((hl-md)^2), sqrt((hr-md)^2))
+  hd <- pmax(sqrt((hl - md)^2), sqrt((hr - md)^2))
   theta <- atan(hd / mean(res(dem)))
   if_raster(theta, dem)
 }
@@ -619,7 +623,7 @@ perpslope <- function(dem) {
 #' findm(topidx(dtm100m))
 #'
 findm <- function(tpx) {
-  tpx <- is_raster(tpx)
+  tpx <- log(is_raster(tpx))
   mn <- 0
   for (i in 0:100) {
     a <- i/5 - 10
@@ -803,9 +807,114 @@ contributiontopeak <- function(ft, basins, bysize = TRUE) {
 
   if_raster(zm, ft)
 }
+#' Distributes soil moisture by topographic wetness
+#'
+#' @description
+#' `topdist` distributes soil moisture, typically within a basin, by the topograhic wetness index of each basin
+#' grid cell
+#'
+#' @param tx a vector or marix of topographic wetness index values
+#' @param sm a single numeric value of the mean soil water fraction
+#' @param p a single numeric value of to power adjustment to apply to topographic wetness
+#' index values (see details)
+#' @param Smin a single numeric value of the residual soil water fraction (see [soilparams()])
+#' @param Smax a single numeric value of the saturated  soil water fraction (see [soilparams()])
+#'
+#' @return a vector or matrix of soil moisture values of each grid cell of tx
+#' @seealso [topidx()], [soilparams()]
+#'
+#' @details the coefficient p scales the relationship between topographic wetness and the
+#' distribution of soil moisture values. If p = 1, soil moisture is strongly concentrated in
+#' cells with a high topographic wetness. If p = 0, soil moisture is evenly distributed across
+#' the basin. The correct choice of p depends on sub-grid scale variation in topographic wetness, and on
+#' complex lateral flows, and thus best determined empirically, by measuring soil moisture across
+#' a catchment. A choice of 0.25 for surface soil layers and 0.15 for sub-surface soil layers
+#' is likely to provide a reasonable approximation.
+#'
+#' @export
+#'
+#' @examples
+#' library(raster)
+#' tpx <- topidx(dtm100m)
+#' tp1 <- topdist(is_raster(tpx), 0.3, p = 0.25)
+#' tp2 <- topdist(is_raster(tpx), 0.3, p = 0.15)
+#' # NB - not distributed by basin
+#' plot(if_raster(tp1, dtm100m))
+#' plot(if_raster(tp2, dtm100m))
+topdist <- function(tx, sm, p = 0.25, Smin = 0.091, Smax = 0.419) {
+  sm <- ifelse(sm > Smax, Smax, sm)
+  sm <- ifelse(sm < Smin, Smin, sm)
+  rscl <- (sm - Smin) / (Smax - Smin)
+  tx2 <- tx ^ p
+  tx2 <- tx2[is.na(tx2) == F]
+  av <- log(rscl / (1 - rscl))
+  sout <- tx2 - mean(tx2) + av
+  sout <- 1 / (1 + exp(-1 * sout))
+  sout <- sout * (Smax - Smin) + Smin
+  sm2 <- mean(sout)
+  rat <- sm / sm2
+  sout2 <- rat * sout
+  if (rat > 1) {
+    x1 <- sum(sout2) - length(sout2[sout2 > Smax]) * Smax
+    x2 <- sum(sout2[sout2 <= Smax])
+    sout2 <- sout2 * (x1 / x2)
+    sout2[sout2 > Smax] <- Smax
+  } else {
+    x1 <- sum(sout2) - length(sout2[sout2 < Smin]) * Smin
+    x2 <- sum(sout2[sout2 >= Smin])
+    sout2 <- sout2 * (x1 / x2)
+    sout2[sout2 < Smin] <- Smin
+  }
+  if (round(rat, 3) == 1) sout2 <- sout
+  so <- tx
+  sel <- which(is.na(tx) == F)
+  so[sel] <- sout2
+  so
+}
 
-
-
-
-
+#' Distributes surface water by topographic wetness
+#'
+#' @description
+#' `topdistw` surface water, typically within a basin, by the topograhic wetness index of each basin
+#' grid cell
+#'
+#' @param tx a vector or matrix of topographic wetness index values
+#' @param wvol a single numeric value of basin  water volume (m^3)
+#' @param p a single numeric value of to power adjustment to apply to topographic wetness
+#' index values (see details)
+#' @param xres x grid cell resolution (m)
+#' @param yres y grid cell resolution (m)
+#'
+#' @return a vector or matrix of surface water depth (mm) for each grid cell of tx
+#' @seealso [topidx()]
+#'
+#' @details the coefficient p scales the relationship between topographic wetness and the
+#' distribution of surface water. If p = 1, soil moisture is strongly concentrated in
+#' cells with a high topographic wetness. If p = 0, soil moisture is evenly distributed across
+#' the basin. The correct choice of p depends on sub-grid scale variation in basin depressions, and on
+#' complex lateral flows, and thus best determined empirically. A choice of 0.3 for is likely to provide a reasonable approximation.
+#'
+#' @export
+#'
+#' @examples
+#' library(raster)
+#' tpx <- topidx(dtm100m)
+#' # average depth on 10 mm
+#' sel <- which(is.na(is_raster(tpx) == F))
+#' wvol <- 10 * 100 * 100 * length(sel) / 1000
+#' # NB - not distributed by basin
+#' swd1 <- topdistw(is_raster(tpx), wvol, p = 0.3, xres = 100, yres = 100)
+#' swd2 <- topdistw(is_raster(tpx), wvol, p = 0.1, xres = 100, yres = 100)
+#' plot(if_raster(swd1, dtm100m))
+#' plot(if_raster(swd2, dtm100m))
+topdistw <- function(tx, wvol, p = 0.3, xres, yres) {
+  if (wvol > 0) {
+    tx2 <- tx ^ p
+    swtr <- tx2 * wvol
+    swtr <- swtr * wvol / sum(swtr, na.rm = T)
+    # Convert to mm per grid cell
+    swtr <- (swtr * 1000) / (xres * yres)
+  } else swtr <- rep(0, length(tx))
+  swtr <-ifelse(swtr < 0, 0, swtr)
+}
 
