@@ -4,10 +4,10 @@
 \alias{hydromodel_spatial}
 \title{Implementation of Mahrt and Pan two-layer model of soil hydrology: spatial}
 \usage{
-hydromodel_spatial(dem, rain, cre, sp, theta1 = 0.35, theta2 = 0.35,
-  surface = 0, p1 = 0.2, p2 = 0.1, p3 = 0.25, z1 = 5, z2 = 95,
-  cn = 82, cover = 0.8, topratio = 0.5, timestep = 86400,
-  n2 = 1.1, Ksat2 = 0.5, Trace = TRUE)
+hydromodel_spatial(dem, rain, cre, sp, basins = NA, theta1 = 0.35,
+  theta2 = 0.35, surface = 0, p1 = 0.2, p2 = 0.1, p3 = 0.25,
+  z1 = 5, z2 = 95, cn = 82, cover = 0.8, topratio = 0.5,
+  timestep = 86400, n2 = 1.1, Ksat2 = 0.5, Trace = TRUE)
 }
 \arguments{
 \item{dem}{a raster or matrix of digital elevation data}

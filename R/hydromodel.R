@@ -374,6 +374,8 @@ hydromodel_time <- function(rain, cre, sp, theta1 = 0.35, theta2 = 0.35, surface
 #' @param cre a vector or 3-dimensional array of crop reference evapotranspirations (mm per timestep) as returned by
 #' [cre.daily()] or [cre.hourly()].
 #' @param sp van Genuchten soil paramaters as returned by [getsoilparams()]
+#' @param basins optional raster or matrix of hydrological basins as returned by `basindelin`.
+#' Calculated if not supplied.
 #' @param theta1 initial soil water fraction of top layer
 #' @param theta2 initial soil water fraction of bottom layer
 #' @param surface initial surface water depth (mm)
@@ -464,7 +466,7 @@ hydromodel_time <- function(rain, cre, sp, theta1 = 0.35, theta2 = 0.35, surface
 #' plot(if_raster(soil1, dtm100m), main = "Layer 1")
 #' plot(if_raster(soil2, dtm100m), main = "Layer 2")
 #'
-hydromodel_spatial <- function(dem, rain, cre, sp, theta1 = 0.35, theta2 = 0.35, surface = 0,
+hydromodel_spatial <- function(dem, rain, cre, sp, basins = NA, theta1 = 0.35, theta2 = 0.35, surface = 0,
                                p1 = 0.2, p2 = 0.1, p3 = 0.25, z1 = 5, z2 = 95, cn = 82, cover = 0.8,
                                topratio = 0.5, timestep = 86400, n2 = 1.1, Ksat2 = 0.5, Trace = TRUE) {
   n <- sp$n
@@ -473,7 +475,9 @@ hydromodel_spatial <- function(dem, rain, cre, sp, theta1 = 0.35, theta2 = 0.35,
   Smin <- sp$Smin
   Smax <- sp$Smax
   cat("Delineating basins and calculating basin attributes\n")
-  basins <- basindelin(dem)
+  if (class(basins) == "logical") {
+    basins <- basindelin(dem)
+  }
   mb <- is_raster(basins)
   md <- is_raster(dem)
   tpidx <- topidx(dem)
