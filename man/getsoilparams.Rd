@@ -7,7 +7,7 @@
 getsoilparams(soiltype)
 }
 \arguments{
-\item{soiltype}{a single character, matrix or raster of characters aslisted in \code{\link[=soilparams]{soilparams()}}}
+\item{soiltype}{a single character, matrix or raster of characters as listed in the dataset \code{\link[=soilparams]{soilparams()}}}
 }
 \value{
 a list of van Genuchten parameters (see details)

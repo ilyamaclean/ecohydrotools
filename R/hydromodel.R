@@ -4,7 +4,7 @@
 #' `getsoilparams` Obtains van Genuchten soil paramaters for a given soil type from an
 #' internal dataset
 #'
-#' @param soiltype a single character, matrix or raster of characters aslisted in [soilparams()]
+#' @param soiltype a single character, matrix or raster of characters as listed in the dataset [soilparams()]
 #' @return a list of van Genuchten parameters (see details)
 #'
 #' @export
