@@ -19,6 +19,9 @@ hydromodel_spatial(dem, rain, cre, sp, basins = NA, theta1 = 0.35,
 
 \item{sp}{van Genuchten soil paramaters as returned by \code{\link[=getsoilparams]{getsoilparams()}}}
 
+\item{basins}{optional raster or matrix of hydrological basins as returned by \code{basindelin}.
+Calculated if not supplied.}
+
 \item{theta1}{initial soil water fraction of top layer}
 
 \item{theta2}{initial soil water fraction of bottom layer}

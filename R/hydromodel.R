@@ -21,6 +21,7 @@
 #' getsoilparams("Loam")
 #'
 getsoilparams <- function(soiltype) {
+  data(soilparams)
   r <- soiltype
   soiltype <- is_raster(soiltype)
   u <- unique(as.vector(soiltype))
